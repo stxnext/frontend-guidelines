@@ -280,6 +280,25 @@
       console.log('Welcome to the Internet. Please follow me.');
     })();
     ```
+  - Use named function expressions instead of unnamed one, even when its an IIFE (beware of older browser it suits only for IE9+). This makes easier to read exception stack traces and profiling.
+
+    ```javascript
+    // bad
+    $(this).on('listingUpdated', function(e, data) {
+        // do sth
+    });
+
+    // good
+    $(this).on('listingUpdated', function updateListingWithSth(e, data) {
+        // do sth
+    });
+
+    // good
+    (function myNamedIIFE() {
+      // do sth
+    })();
+    ```
+  - For more information read [named function expressions] (http://stackoverflow.com/questions/15336347/why-using-named-function-expression)
 
   - Never declare a function in a non-function block (if, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
   - **Note:** ECMA-262 defines a `block` as a list of statements. A function declaration is not a statement. [Read ECMA-262's note on this issue](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97).
@@ -314,6 +333,27 @@
       // ...stuff...
     }
     ```
+  - Use closures carefully, because they can affect memory leaks.
+  - One thing to keep in mind, however, is that a closure keeps a pointer to its enclosing scope. As a result, attaching a closure to a DOM element can create a circular reference and thus, a memory leak. For example, in the following code:
+
+    ```javascript
+    function foo(element, a, b) {
+      element.onclick = function() { /* uses a and b */ };
+    }
+    ```
+  - The function closure keeps a reference to element, a, and b even if it never uses element. Since element also keeps a reference to the closure, we have a cycle that won't be cleaned up by garbage collection.
+  - In these situations, the code can be structured as follows:
+
+    ```javascript
+    function foo(element, a, b) {
+      element.onclick = bar(a, b);
+    }
+
+    function bar(a, b) {
+      return function() { /* uses a and b */ };
+    }
+    ```
+  - More about closures: [closures](http://jibbering.com/faq/notes/closures/)
 
 **[⬆ back to top](#table-of-contents)**
 
@@ -389,7 +429,7 @@
     var dragonball = 'z';
     ```
 
-  - Declare unassigned variables last. This is helpful when later on you might need to assign a variable depending on one of the previous assigned variables.
+  - Declare unassigned variables first.
 
     ```javascript
     // bad
@@ -405,11 +445,11 @@
     var len;
 
     // good
+    var i;
+    var length;
+    var dragonball;
     var items = getItems();
     var goSportsTeam = true;
-    var dragonball;
-    var length;
-    var i;
     ```
 
   - Assign variables at the top of their scope. This helps avoid issues with variable declaration and assignment hoisting related issues.
@@ -637,6 +677,16 @@
     }
     ```
 
+  - Never use with.
+  - Using with is not recommended, and is forbidden in ECMAScript 5 strict mode. The recommended alternative is to assign the object whose properties you want to access to a temporary variable.
+
+    ```javascript
+    // bad
+    with(foo) {
+      // sth
+    }
+    ```
+
 **[⬆ back to top](#table-of-contents)**
 
 
@@ -735,12 +785,12 @@
 
 ## Whitespace
 
-  - Use soft tabs set to 2 spaces
+  - Use soft tabs set to 4 spaces
 
     ```javascript
     // bad
     function() {
-    ∙∙∙∙var name;
+    ∙∙var name;
     }
 
     // bad
@@ -750,7 +800,7 @@
 
     // good
     function() {
-    ∙∙var name;
+    ∙∙∙∙var name;
     }
     ```
 
@@ -759,12 +809,12 @@
     ```javascript
     // bad
     function test(){
-      console.log('test');
+        console.log('test');
     }
 
     // good
     function test() {
-      console.log('test');
+        console.log('test');
     }
 
     // bad
@@ -1042,7 +1092,7 @@
     }
     ```
 
-  - Use camelCase when naming objects, functions, and instances
+  - Use camelCase when naming objects, functions, and instances. Except well known shortcuts combined with other words in the beginning ex. traverseDOM, getXHR etc.
 
     ```javascript
     // bad
@@ -1094,7 +1144,7 @@
     this._firstName = 'Panda';
     ```
 
-  - When saving a reference to `this` use `_this`.
+  - When saving a reference to `this` use `self`.
 
     ```javascript
     // bad
@@ -1115,9 +1165,9 @@
 
     // good
     function() {
-      var _this = this;
+      var self = this;
       return function() {
-        console.log(_this);
+        console.log(self);
       };
     }
     ```
@@ -1307,6 +1357,34 @@
       // do something with data.listingId
     });
     ```
+
+  - In case of larger projects, event names should be excluded from their inline definition, to external module/object with constants.
+
+    ```javascript
+    var myCustomEvents = {
+         LISTING_UPDATED: 'listingUpdated',
+         SOME_FANCY_NAME: 'myFancyEventName'
+    };
+    //later ex. usage
+    $(this).on(myCustomEvents.LISTING_UPDATED, ...
+    ```
+
+  - Split inline event handlers to the top of module/object. So handlers can be reused and prevents it from callback hell.
+
+  ```javascript
+  // good
+      $(this).trigger('listingUpdated', { listingId : listing.id });
+
+      ...
+
+      function myFancyHandler (e, data) {
+              // do something with data.listingId
+      }
+
+      ...
+
+      $(this).on('listingUpdated', this.myFancyHandler);
+  ```
 
   **[⬆ back to top](#table-of-contents)**
 
