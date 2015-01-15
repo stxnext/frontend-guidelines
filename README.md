@@ -280,25 +280,6 @@
       console.log('Welcome to the Internet. Please follow me.');
     })();
     ```
-  - Use named function expressions instead of unnamed one, even when its an IIFE (beware of older browser it suits only for IE9+). This makes easier to read exception stack traces and profiling.
-
-    ```javascript
-    // bad
-    $(this).on('listingUpdated', function(e, data) {
-        // do sth
-    });
-
-    // good
-    $(this).on('listingUpdated', function updateListingWithSth(e, data) {
-        // do sth
-    });
-
-    // good
-    (function myNamedIIFE() {
-      // do sth
-    })();
-    ```
-  - For more information read [named function expressions] (http://stackoverflow.com/questions/15336347/why-using-named-function-expression)
 
   - Never declare a function in a non-function block (if, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
   - **Note:** ECMA-262 defines a `block` as a list of statements. A function declaration is not a statement. [Read ECMA-262's note on this issue](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97).
@@ -1184,6 +1165,21 @@
     var log = function log(msg) {
       console.log(msg);
     };
+    
+    // bad
+    $(this).on('listingUpdated', function(e, data) {
+        // do sth
+    });
+
+    // good
+    $(this).on('listingUpdated', function updateListingWithSth(e, data) {
+        // do sth
+    });
+
+    // good
+    (function myNamedIIFE() {
+      // do sth
+    })();
     ```
 
   - **Note:** IE8 and below exhibit some quirks with named function expressions.  See [http://kangax.github.io/nfe/](http://kangax.github.io/nfe/) for more info.
