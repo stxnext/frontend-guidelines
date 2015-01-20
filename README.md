@@ -1,6 +1,6 @@
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/airbnb/javascript?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-# Airbnb JavaScript Style Guide() {
+# Airbnb based JavaScript Style Guide() {
 
 *A mostly reasonable approach to JavaScript*
 
@@ -429,6 +429,7 @@
     var i;
     var length;
     var dragonball;
+
     var items = getItems();
     var goSportsTeam = true;
     ```
@@ -1165,7 +1166,7 @@
     var log = function log(msg) {
       console.log(msg);
     };
-    
+
     // bad
     $(this).on('listingUpdated', function(e, data) {
         // do sth
@@ -1352,17 +1353,6 @@
     $(this).on('listingUpdated', function(e, data) {
       // do something with data.listingId
     });
-    ```
-
-  - In case of larger projects, event names should be excluded from their inline definition, to external module/object with constants.
-
-    ```javascript
-    var myCustomEvents = {
-         LISTING_UPDATED: 'listingUpdated',
-         SOME_FANCY_NAME: 'myFancyEventName'
-    };
-    //later ex. usage
-    $(this).on(myCustomEvents.LISTING_UPDATED, ...
     ```
 
   - Split inline event handlers to the top of module/object. So handlers can be reused and prevents it from callback hell.
